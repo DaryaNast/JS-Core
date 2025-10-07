@@ -1,48 +1,31 @@
 class View {
     constructor() {
         this.app =  document.getElementById('app');
+        this.searchInput = document.querySelector('.search-input');
+        this.repoList = document.querySelector('.repo-list');
+        this.selectedReposList = document.querySelector('.selected-repo-list');
+        this.repoWrapper = document.querySelector('.repo-wrapper');
 
-        this.title = this.createElement('h1', 'title');
-        this.title.textContent = 'Github Search Repo';
-
-        this.searchLine = this.createElement('div', 'search-line');
-        this.searchInput = this.createElement('input', 'search-input');
-        this.searchInput.placeholder = 'Search repositories...';
-        this.searchLine.append(this.searchInput);
-
-        this.repoWrapper = this.createElement('div', 'repo-wrapper');
-        this.repoList = this.createElement('ul', 'repo-list');
-        this.repoWrapper.append(this.repoList);
-
-        this.main = this.createElement('div', 'main');
-        this.main.append(this.repoWrapper);
-
-        this.selectedRepos = this.createElement('div', 'selected-repos');
-        this.selectedReposTitle = this.createElement('h2', 'selected-repos-title');
-        this.selectedReposList = this.createElement('ul', 'selected-repos-list');
-
-        this.selectedRepos.append(this.selectedReposTitle);
-        this.selectedRepos.append(this.selectedReposList);
-
-        this.app.append(this.title);
-        this.app.append(this.searchLine);
-        this.app.append(this.main);
-        this.main.append(this.selectedRepos);
-    }
-    createElement(elementTag, elementClass) {
-        const element = document.createElement(elementTag);
-        if (elementClass) {
-            element.classList.add(elementClass);
-        }
-        return element;
+        this.repoList.style.display = 'none';
     }
 
     clearResults() {
         this.repoList.innerHTML = '';
     }
 
+    showDropdown() {
+        if (this.repoList.children.length > 0) {
+            this.repoList.style.display = 'block';
+        }
+    }
+
+    hideDropdown() {
+        this.repoList.style.display = 'none';
+    }
+
     createRepo(repoData) {
-        const repoElement = this.createElement('li', 'repo-prev');
+        const repoElement = document.createElement('li');
+        repoElement.className ='repo-prev';
         repoElement.innerHTML = `<span class= "repo-prev-name">${repoData.name}</span>
                                  <span class="repo-prev-owner">${repoData.owner.login}</span>
                                  <span class="repo-prev-stars">${repoData.stargazers_count}</span>`;
@@ -54,7 +37,8 @@ class View {
     }
 
     addToSelectedRepos(repoData) {
-        const selectedRepoElement = this.createElement('li', 'selected-repo');
+        const selectedRepoElement = document.createElement('li');
+        selectedRepoElement.className ='selected-repo';
         selectedRepoElement.innerHTML = `
             <div class="repo-info">
                 <div class="repo-details">
@@ -72,10 +56,10 @@ class View {
             selectedRepoElement.remove();
         })
 
-        this.selectedReposList.append(selectedRepoElement);
+        this.selectedReposList.appendChild(selectedRepoElement);
         this.clearResults()
         this.searchInput.value = '';
-        this.repoWrapper.style.display = 'none';
+        this.hideDropdown();
     }
 }
 
@@ -84,18 +68,36 @@ const REPO_PER_PAGE = 5;
 class Search {
     constructor(view) {
         this.view = view;
-        this.view.searchInput.addEventListener('input', this.debounce(this.searchRepo.bind(this), 400));
-        this.view.searchInput.addEventListener('focus', () => {
-            if (this.view.repoList.children.length > 0) {
-                this.view.repoWrapper.style.display = 'block';
-            }
-    })
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        this.view.searchInput.addEventListener('input',
+            this.debounce(this.searchRepo.bind(this), 400));
+
+        this.view.searchInput.addEventListener('focus',
+            this.handleFocus.bind(this));
+
+        this.view.searchInput.addEventListener('click',
+            this.handleFocus.bind(this));
 
         document.addEventListener('click', (e) => {
-            if (!this.view.repoWrapper.contains(e.target) && e.target !== this.view.searchInput) {
-                this.view.repoWrapper.style.display = 'none';
+            if (e.target !== this.view.searchInput && !this.view.repoWrapper.contains(e.target)) {
+                this.view.hideDropdown();
             }
         });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.view.hideDropdown();
+            }
+        });
+    }
+
+    handleFocus() {
+        if (this.view.repoList.children.length > 0) {
+            this.view.showDropdown();
+        }
     }
 
     debounce(func, wait) {
@@ -121,17 +123,31 @@ class Search {
 
         this.view.clearResults();
 
-        return await fetch(`https://api.github.com/search/repositories?q=Q${this.view.searchInput.value}&per_page=${REPO_PER_PAGE}`)
-            .then((res) => {
-            if (res.ok) {
-                res.json().then(res => {
-                    res.items.forEach(repo => this.view.createRepo(repo));
-                });
+        try {
+            const response = await fetch(
+                `https://api.github.com/search/repositories?q=${encodeURIComponent(searchValue)}&per_page=${REPO_PER_PAGE}`
+            );
+
+            if (response.ok) {
+                const data = await response.json();
+                this.view.clearResults();
+
+                if (data.items && data.items.length > 0) {
+                    data.items.forEach(repo => this.view.createRepo(repo));
+                    this.view.showDropdown();
+                } else {
+                    this.view.hideDropdown();
+                }
             } else {
-                this.view.repoWrapper.style.display = 'none';
+                this.view.hideDropdown();
             }
-        });
+        } catch (error) {
+            console.error('Error fetching repositories:', error);
+            this.view.hideDropdown();
+        }
     }
 }
 
-new Search(new View());
+document.addEventListener('DOMContentLoaded', () => {
+    new Search(new View());
+});

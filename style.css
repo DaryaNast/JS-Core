@@ -177,7 +177,6 @@ body {
     background: #c82333;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     #app {
         padding: 15px;
