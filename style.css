@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f6f8fa;
+    color: #24292e;
+    line-height: 1.5;
+}
+
+#app {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #24292e;
+    font-weight: 600;
+    font-size: 28px;
+}
+
+.search-line {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #e1e4e8;
+    border-radius: 8px;
+    background-color: white;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0366d6;
+    box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+}
+
+.repo-wrapper {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.repo-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(140, 149, 159, 0.2);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    list-style: none;
+}
+
+.repo-prev {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eaecef;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.1s;
+}
+
+.repo-prev:hover {
+    background-color: #f6f8fa;
+}
+
+.repo-prev:last-child {
+    border-bottom: none;
+}
+
+.repo-prev-name {
+    font-weight: 600;
+    color: #0366d6;
+    flex: 1;
+}
+
+.repo-prev-owner {
+    color: #586069;
+    margin: 0 15px;
+    font-size: 14px;
+}
+
+.repo-prev-stars {
+    color: #6a737d;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.selected-repos {
+    background: white;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.selected-repos-title {
+    margin-bottom: 15px;
+    color: #24292e;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.selected-repos-list {
+    list-style: none;
+}
+
+.selected-repo {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.repo-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+
+.repo-details {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.repo-name {
+    font-weight: 600;
+    color: #0366d6;
+}
+
+.repo-owner {
+    color: #586069;
+    font-size: 14px;
+}
+
+.repo-stars {
+    color: #6a737d;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.remove-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.remove-btn:hover {
+    background: #c82333;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    #app {
+        padding: 15px;
+    }
+
+    .repo-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .repo-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .remove-btn {
+        align-self: flex-end;
+    }
+}
