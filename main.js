@@ -77,7 +77,7 @@ class Search {
         });
 
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('search-line') && !e.target.closest('.repo-list')) {
+            if (!e.target.closest('.search-line') && !e.target.closest('.repo-list')) {
                 this.view.hideDropdown();
             }
         })
