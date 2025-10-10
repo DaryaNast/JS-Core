@@ -1,26 +1,22 @@
 class View {
     constructor() {
-        this.app =  document.getElementById('app');
         this.searchInput = document.querySelector('.search-input');
         this.repoList = document.querySelector('.repo-list');
         this.selectedReposList = document.querySelector('.selected-repo-list');
-        this.repoWrapper = document.querySelector('.repo-wrapper');
-
-        this.repoList.style.display = 'none';
+        this.searchLine = document.querySelector('.search-line');
     }
 
     clearResults() {
         this.repoList.innerHTML = '';
+        this.hideDropdown();
     }
 
     showDropdown() {
-        if (this.repoList.children.length > 0) {
-            this.repoList.style.display = 'block';
-        }
+        this.repoList.classList.add('repo-list--visible');
     }
 
     hideDropdown() {
-        this.repoList.style.display = 'none';
+        this.repoList.classList.remove('repo-list--visible');
     }
 
     createRepo(repoData) {
@@ -59,7 +55,6 @@ class View {
         this.selectedReposList.appendChild(selectedRepoElement);
         this.clearResults()
         this.searchInput.value = '';
-        this.hideDropdown();
     }
 }
 
@@ -75,30 +70,20 @@ class Search {
         this.view.searchInput.addEventListener('input',
             this.debounce(this.searchRepo.bind(this), 400));
 
-        this.view.searchInput.addEventListener('focus',
-            this.handleFocus.bind(this));
-
-        this.view.searchInput.addEventListener('click',
-            this.handleFocus.bind(this));
+        this.view.searchInput.addEventListener('focus', () => {
+            if (this.view.repoList.children.length > 0) {
+                this.view.showDropdown();
+            }
+        });
 
         document.addEventListener('click', (e) => {
-            if (e.target !== this.view.searchInput && !this.view.repoWrapper.contains(e.target)) {
+            if (!e.target.closest('search-line') && !e.target.closest('.repo-list')) {
                 this.view.hideDropdown();
             }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.view.hideDropdown();
-            }
-        });
+        })
     }
 
-    handleFocus() {
-        if (this.view.repoList.children.length > 0) {
-            this.view.showDropdown();
-        }
-    }
+
 
     debounce(func, wait) {
         let timeout;
@@ -117,7 +102,6 @@ class Search {
 
         if (searchValue.length === 0) {
             this.view.clearResults();
-            this.view.repoWrapper.style.display = 'none';
             return;
         }
 

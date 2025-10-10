@@ -27,6 +27,7 @@ body {
 
 .search-line {
     margin-bottom: 20px;
+    position: relative;
 }
 
 .search-input {
@@ -63,6 +64,12 @@ body {
     overflow-y: auto;
     z-index: 1000;
     list-style: none;
+
+    display: none;
+}
+
+.repo-list--visible {
+    display: block;
 }
 
 .repo-prev {
@@ -115,8 +122,10 @@ body {
     font-weight: 600;
 }
 
-.selected-repos-list {
+.selected-repo-list {
     list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .selected-repo {
